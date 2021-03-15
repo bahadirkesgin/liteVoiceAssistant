@@ -35,8 +35,8 @@ def listen():
         
 # TODO: add specific sentences to react
     if __name__=='__main__':
-    username = ''
-    speak("Merhaba"+ username "ben kişisel asistanınız rigel", 5)
+        username = ''
+        speak("Merhaba"+ username + "ben kişisel asistanınız rigel", 5)
     if username == '':
         speak("Size nasıl hitap etmemi istersiniz", 4)
         username = listen().lower()
@@ -56,15 +56,15 @@ def listen():
             wikipedia_search(text)
                   
         elif 'saat kaç' in text:
-             
+            break
         
-        elif 'ara'  in text:
+        elif 'ara' in text:
             text = text.replace("ara", "")
             google_search(text)
             speak("İşte bunları buldum", 6)
             
         elif "hesapla" or "kaç eder" or "kaçtır" in text: 
-            
+            break    
             
         elif 'google aç' in text:
             driver = webdriver.Chrome(r"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe")
@@ -75,11 +75,11 @@ def listen():
             youtube_search(text)
              
         elif 'müzik çal' in text:
-            
+            break
         elif 'hava' in text:
-            
+            break
         elif 'sesi aç' or 'sesi yükselt' or 'sesi arttır' in text:
-            
+            break
         else:
            speak("Üzgünüm, isteğinizi yerine getiremiyorum", 2)
 
