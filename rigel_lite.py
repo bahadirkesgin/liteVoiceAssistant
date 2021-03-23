@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import SpeechRecognition as sr
-import random
 from datetime import datetime
 from playsound import playsound
 from gtts import gTTS
@@ -16,7 +15,7 @@ from nltk.tokenize import sent_tokenize
 re = sr.Recogniser()
 mic = sr.Microphone()
 
-def speak(text, num):
+def speak(text, num = random.randint(50,3000)):
     tts = gTTS(text, lang ='tr')
     file = "audio-"+str(num)+".mp3"
     print(text)
