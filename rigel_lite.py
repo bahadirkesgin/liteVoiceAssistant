@@ -75,7 +75,7 @@ def listen():
             google_search(text)
             speak("İşte bunları buldum", 6)
             
-        elif "hesapla" or "kaç eder" or "kaçtır" in text:
+        elif "hesapla" in text:
             api_id = "LYH8JE-XHUWTAJVJX"
             wolfram_cli = wolframalpha.Client(api_id)
             indx = text.split().index('hesapla')
