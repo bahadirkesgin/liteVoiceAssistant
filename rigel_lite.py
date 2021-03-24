@@ -21,6 +21,7 @@ def speak(text, num = random.randint(50,3000)):
     print(text)
     tts.save(file)
     playsound(file)
+    os.remove(file)
 
 def listen():
     u_text = ""
@@ -49,18 +50,16 @@ def listen():
         if text==0:
             continue
         
-        if "durdur" in str(text):
-            break
-        
-        if "çıkış" in str(text) or "görüşürüz" in str(text):
+        if "çıkış" in text or "görüşürüz" in text:
             print("Görüşmek üzere!")
             speak("Görüşmek üzere")
             break
         
-        elif "tarih" in str(text):
+        elif "tarih" in text:
             date = datetime.date.today()
             date = date.strftime("%d/%m/%y")
             speak(f"Bugünün tarihi {date}")
+            print(f"Bugünün tarihi:{date}")
         
         elif 'wikipedia' in text:
             text = text.replace("wikipedia", "")
@@ -78,10 +77,10 @@ def listen():
             
         elif "hesapla" or "kaç eder" or "kaçtır" in text:
             api_id = "LYH8JE-XHUWTAJVJX"
-            client = wolframalpha.Client(api_id)
-            indx = text.lower().split().index('calculate')
+            wolfram_cli = wolframalpha.Client(api_id)
+            indx = text.split().index('calculate')
             text = text.split()[indx + 1:]
-            res = client.query(' '.join(text))
+            res = wolfram_cli.query(' '.join(text))
             answer = next(res.results).text
             print("İşlemin sonucu: " + answer)
             speak("İşlemin sonucu " + answer)
@@ -105,8 +104,8 @@ def listen():
             text_city = text.replace("hava durumu", "")
             api_key="e2024c81d0ce1686c5b70152fdd01b9d"
             base_url="https://api.openweathermap.org/data/2.5/weather?"
-            complete_url = base_url + "appid="+api_key+"&q="+ text_city +"&lang=tr"+"&units=metric"
-            response = requests.get(complete_url)
+            full_url = base_url + "appid="+api_key+"&q="+ text_city +"&lang=tr"+"&units=metric"
+            response = requests.get(full_url)
             x=response.json()
             if x["cod"]!="404":
                 y=x["main"]
@@ -114,21 +113,16 @@ def listen():
                 cur_hum = y["humidity"]
                 z = x["weather"]
                 weather_des = z[0]["description"]
-                w_f1 = f"Bugün {text_city} ilinde hava "
-                w_f2 = f"{cur_temp} derece nem oranı "
-                w_f3 = f"{cur_hum} ve hava {weather_des}"
+                w_f1 = f"Bugün {text_city} ilinde hava {weather_des} "
+                w_f2 = f"{cur_temp} derece "
+                w_f3 = f"ve nem oranı {cur_hum}"
                 weather_forecast = w_f1 + w_f2 + w_f3
                 speak(weather_forecast)
                 print(weather_forecast)
         
-        elif 'sesi aç' or 'sesi yükselt' or 'sesi arttır' in text:
-            break
-        
-        elif "sesi azalt" or "sesi düşür" in text:
-            break
-        
         elif "haberler" in text:
-            webdriver.Chrome("https://www.bbc.com/turkce")
+            driver = webdriver.Chrome(r"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe")
+            driver.get("https://www.bbc.com/turkce")
             speak("BBC Türkçeden haberler, iyi okumalar")
             time.sleep(6)
         
@@ -146,7 +140,7 @@ def google_search(stext):
     
 def wikipedia_search(stext): # stext = searched text
     wikipedia.set_lang("tr")
-    search_result = wikipedia.search(stext)
+    search_result = wikipedia.summary(stext, sentences=3)
     random_num =  random(50,1000)
     sptext = search_result.sent_tokenize(search_result)
     speak(sptext, random_num)
