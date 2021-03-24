@@ -120,6 +120,14 @@ def listen():
                 speak(weather_forecast)
                 print(weather_forecast)
         
+        elif "nedir" or "kimdir" in text:
+            api_id = "LYH8JE-XHUWTAJVJX"
+            client = wolframalpha.Client(api_id)
+            res = client.query(text)
+            res_text = next(res.results).text
+            speak(res_text)
+            print(res_text)
+        
         elif "haberler" in text:
             driver = webdriver.Chrome(r"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe")
             driver.get("https://www.bbc.com/turkce")
