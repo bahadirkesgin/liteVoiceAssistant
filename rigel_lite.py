@@ -78,7 +78,7 @@ def listen():
         elif "hesapla" or "kaç eder" or "kaçtır" in text:
             api_id = "LYH8JE-XHUWTAJVJX"
             wolfram_cli = wolframalpha.Client(api_id)
-            indx = text.split().index('calculate')
+            indx = text.split().index('hesapla')
             text = text.split()[indx + 1:]
             res = wolfram_cli.query(' '.join(text))
             answer = next(res.results).text
