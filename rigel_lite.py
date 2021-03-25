@@ -11,7 +11,13 @@ import wolframalpha
 import requests
 from selenium import webdriver
 from nltk.tokenize import sent_tokenize
+'''
+# Install pip in virtualenv
+sudo apt-get install python3-pip
 
+# Install python requirements
+pip3 install -r requirements.txt
+'''
 re = sr.Recogniser()
 mic = sr.Microphone()
 
