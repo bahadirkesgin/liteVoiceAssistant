@@ -1,0 +1,8 @@
+SpeechRecognition==3.8.1
+playsound==1.2.2
+gTTS==2.2.2
+wikipedia==1.4.0
+wolframalpha==5.0.0
+requests==2.25.1
+selenium==3.141.0
+nltk==3.4.5
