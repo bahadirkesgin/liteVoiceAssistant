@@ -29,6 +29,34 @@ def speak(text, num = random.randint(50,3000)):
     playsound(file)
     os.remove(file)
 
+def google_search(stext):
+    stext = stext.split()
+    search_object = ""
+    for i in stext[1:-2]:
+        search_object = search_object + i
+    driver = webdriver.Chrome(r"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe")
+    driver.get("http://google.com/search?q=" + search_object)
+    
+def wikipedia_search(stext): # stext = searched text
+    wikipedia.set_lang("tr")
+    search_result = wikipedia.summary(stext, sentences=3)
+    speak(search_result)
+    driver = webdriver.Chrome(r"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe")
+    driver.get("https://tr.wikipedia.org/wiki/" + stext)
+    
+def youtube_search(stext):
+    stext = stext.split()
+    song_name = ""
+    for i in stext[1:-1]:
+        song_name = song_name + i
+    driver = webdriver.Chrome(r"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe")
+    driver.get("https://www.youtube.com/results?search_query=" + song_name);
+    select_element = driver.find_elements_by_xpath('//*[@id="video-title"]')
+    for option in select_element:
+        option.find_element_by_xpath('//*[@id="video-title"]').click()
+        break
+    return driver
+
 def listen():
     u_text = ""
     with mic as source:
@@ -41,46 +69,46 @@ def listen():
             speak(excep_response, 1)
     return u_text
         
-# TODO: add specific sentences to react
     if __name__=='__main__':
         username = ''
         speak("Merhaba"+ username + "ben kişisel asistanınız rigel", 5)
-    if username == '':
-        speak("Size nasıl hitap etmemi istersiniz", 4)
-        username = listen().lower()
         
-    while(1):
+    while True:
         speak("Size nasıl yardımcı olabilirim", 3)
         text = listen().lower()
         
+        if username == '':
+            speak("Size nasıl hitap etmemi istersiniz", 4)
+            username = listen().lower()
+        
         if text==0:
             continue
-        
+            
         if "çıkış" in text or "görüşürüz" in text:
             print("Görüşmek üzere!")
             speak("Görüşmek üzere")
             break
-        
+            
         elif "tarih" in text:
             date = datetime.date.today()
             date = date.strftime("%d/%m/%y")
             speak(f"Bugünün tarihi {date}")
             print(f"Bugünün tarihi:{date}")
-        
+            
         elif 'wikipedia' in text:
             text = text.replace("wikipedia", "")
             wikipedia_search(text)
-                  
+                      
         elif 'saat kaç' in text:
             cur_time = datetime.datetime.now()
             cur_time = cur_time.strftime("%H:%M:%S")
             speak(f"Saat {cur_time}")
-        
+            
         elif 'ara' in text:
             text = text.replace("ara", "")
             google_search(text)
             speak("İşte bunları buldum", 6)
-            
+                
         elif "hesapla" in text:
             api_id = "LYH8JE-XHUWTAJVJX"
             wolfram_cli = wolframalpha.Client(api_id)
@@ -90,22 +118,19 @@ def listen():
             answer = next(res.results).text
             print("İşlemin sonucu: " + answer)
             speak("İşlemin sonucu " + answer)
-            
-            
+                
         elif 'google aç' in text:
             driver = webdriver.Chrome(r"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe")
             driver.get("https://google.com")
-            
+                
         elif 'youtube aç' in text: 
             text = text.replace("youtube", "")
             youtube_search(text)
-             
-        
+                   
         elif 'müzik çal' in text:
             text = text.replace("youtube", "")
             youtube_search(text)
-            
-        
+                
         elif 'hava durumu' in text:
             text_city = text.replace("hava durumu", "")
             api_key="e2024c81d0ce1686c5b70152fdd01b9d"
@@ -133,7 +158,7 @@ def listen():
             res_text = next(res.results).text
             speak(res_text)
             print(res_text)
-        
+            
         elif "haberler" in text:
             driver = webdriver.Chrome(r"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe")
             driver.get("https://www.bbc.com/turkce")
@@ -141,35 +166,5 @@ def listen():
             time.sleep(6)
         
         else:
-           speak("Üzgünüm, isteğinizi yerine getiremiyorum", 2)
-
+            speak("Üzgünüm, isteğinizi yerine getiremiyorum", 2)
     
-def google_search(stext):
-    stext = stext.split()
-    search_object = ""
-    for i in stext[1:-2]:
-        search_object = search_object + i
-    driver = webdriver.Chrome(r"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe")
-    driver.get("http://google.com/search?q=" + search_object)
-    
-def wikipedia_search(stext): # stext = searched text
-    wikipedia.set_lang("tr")
-    search_result = wikipedia.summary(stext, sentences=3)
-    random_num =  random(50,1000)
-    sptext = search_result.sent_tokenize(search_result)
-    speak(sptext, random_num)
-    driver = webdriver.Chrome(r"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe")
-    driver.get("https://tr.wikipedia.org/wiki/" + stext)
-    
-def youtube_search(stext):
-    stext = stext.split()
-    song_name = ""
-    for i in stext[1:-1]:
-        song_name = song_name + i
-    driver = webdriver.Chrome(r"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe")
-    driver.get("https://www.youtube.com/results?search_query=" + song_name);
-    select_element = driver.find_elements_by_xpath('//*[@id="video-title"]')
-    for option in select_element:
-        option.find_element_by_xpath('//*[@id="video-title"]').click()
-        break
-    return driver
