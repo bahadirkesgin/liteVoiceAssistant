@@ -6,3 +6,4 @@ wolframalpha==5.0.0
 requests==2.25.1
 selenium==3.141.0
 nltk==3.4.5
+PyAudio==0.2.11
