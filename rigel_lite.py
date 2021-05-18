@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
-import SpeechRecognition as sr
-from datetime import datetime
+import speech_recognition as sr
+import datetime
 from playsound import playsound
 from gtts import gTTS
+import locale
 import wikipedia
 import random
 import os
@@ -10,16 +11,15 @@ import time
 import wolframalpha
 import requests
 from selenium import webdriver
-from nltk.tokenize import sent_tokenize
-'''
-# Install pip in virtualenv
-sudo apt-get install python3-pip
 
+'''
 # Install python requirements
 pip3 install -r requirements.txt
 '''
-re = sr.Recogniser()
+
+re = sr.Recognizer()
 mic = sr.Microphone()
+locale.setlocale(locale.LC_ALL, '')
 
 def speak(text, num = random.randint(50,3000)):
     tts = gTTS(text, lang ='tr')
@@ -39,7 +39,7 @@ def google_search(stext):
     
 def wikipedia_search(stext): # stext = searched text
     wikipedia.set_lang("tr")
-    search_result = wikipedia.summary(stext, sentences=3)
+    search_result = wikipedia.summary(stext, sentences = 5)
     speak(search_result)
     driver = webdriver.Chrome(r"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe")
     driver.get("https://tr.wikipedia.org/wiki/" + stext)
@@ -58,30 +58,35 @@ def youtube_search(stext):
     return driver
 
 def listen():
-    u_text = ""
-    with mic as source:
-        voice = re.listen(source)
-        try:
-            u_text = re.recognize_google(voice)
-            print(voice + "dediniz")
-        except sr.UnkownValueError:
-            excep_response = "Üzgünüm, ne dediğinizi anlamadım. Lütfen tekrar konuşun"
-            speak(excep_response, 1)
+    "listens for commands"
+    r = sr.Recognizer()
+    with sr.Microphone() as source:
+        r.pause_threshold = 1
+        r.adjust_for_ambient_noise(source, duration=1)
+        audio = r.listen(source)
+    try:
+        u_text = r.recognize_google(audio, language = "tr").lower()
+        print(u_text + ' dediniz')
+    
+    except sr.UnknownValueError:
+        print("Üzgünüm ne dediğinizi anlayamadım")
+        speak("Üzgünüm ne dediğinizi anlayamadım")
+        u_text = listen();
     return u_text
         
-    if __name__=='__main__':
-        username = ''
-        speak("Merhaba"+ username + "ben kişisel asistanınız rigel", 5)
+if __name__=='__main__':
+    username = ''
+    speak("Merhaba"+ username + " ben kişisel asistanınız rigel", 5)
+    if username == '':
+        speak("Size nasıl hitap etmemi istersiniz", 4)
+        username = listen().lower()
+        speak("Tekrar merhaba " + username)
         
     while True:
         speak("Size nasıl yardımcı olabilirim", 3)
         text = listen().lower()
         
-        if username == '':
-            speak("Size nasıl hitap etmemi istersiniz", 4)
-            username = listen().lower()
-        
-        if text==0:
+        if text== '':
             continue
             
         if "çıkış" in text or "görüşürüz" in text:
@@ -90,13 +95,16 @@ def listen():
             break
             
         elif "tarih" in text:
-            date = datetime.date.today()
-            date = date.strftime("%d/%m/%y")
-            speak(f"Bugünün tarihi {date}")
-            print(f"Bugünün tarihi:{date}")
+            an = datetime.datetime.now()
+            date = datetime.datetime.strftime(an, '%x')
+            day = datetime.datetime.strftime(an, '%A')
+            speak(f"Bugünün tarihi {date} {day}")
+            print(f"Bugünün tarihi: {date} {day}")
             
-        elif 'wikipedia' in text:
+        elif 'wikipedia' or 'nedir' or 'kimdir' in text:
             text = text.replace("wikipedia", "")
+            text = text.replace("nedir", "")
+            text = text.replace("kimdir", "")
             wikipedia_search(text)
                       
         elif 'saat kaç' in text:
@@ -133,7 +141,7 @@ def listen():
                 
         elif 'hava durumu' in text:
             text_city = text.replace("hava durumu", "")
-            api_key="e2024c81d0ce1686c5b70152fdd01b9d"
+            api_key = "e2024c81d0ce1686c5b70152fdd01b9d"
             base_url="https://api.openweathermap.org/data/2.5/weather?"
             full_url = base_url + "appid="+api_key+"&q="+ text_city +"&lang=tr"+"&units=metric"
             response = requests.get(full_url)
@@ -146,19 +154,11 @@ def listen():
                 weather_des = z[0]["description"]
                 w_f1 = f"Bugün {text_city} ilinde hava {weather_des} "
                 w_f2 = f"{cur_temp} derece "
-                w_f3 = f"ve nem oranı {cur_hum}"
+                w_f3 = f"ve nem oranı %{cur_hum}"
                 weather_forecast = w_f1 + w_f2 + w_f3
                 speak(weather_forecast)
                 print(weather_forecast)
-        
-        elif "nedir" or "kimdir" in text:
-            api_id = "LYH8JE-XHUWTAJVJX"
-            client = wolframalpha.Client(api_id)
-            res = client.query(text)
-            res_text = next(res.results).text
-            speak(res_text)
-            print(res_text)
-            
+                    
         elif "haberler" in text:
             driver = webdriver.Chrome(r"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe")
             driver.get("https://www.bbc.com/turkce")
